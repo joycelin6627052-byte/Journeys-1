@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journeys:Unit 1 What is a pal</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+    .page-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+    .toolbar-side {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .btn:hover { background: #f8fafc; border-color: #94a3b8; }
+    .btn-read {
+      background: #059669;
+      color: #ffffff;
+      border-color: #059669;
+    }
+    .btn-read:hover { background: #047857; }
+    .btn-read.reading {
+      background: #f59e0b;
+      border-color: #d97706;
+      animation: pulse 1.5s infinite;
+    }
+    .btn-next {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+    .btn-next:hover { background: #1d4ed8; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .speed-group {
+      display: inline-flex;
+      align-items: center;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 2px;
+    }
+    .speed-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #64748b;
+      padding: 0 6px;
+    }
+    .speed-btn {
+      background: transparent;
+      border: none;
+      color: #475569;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .speed-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 16px;
+      gap: 14px;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .reader-stage {
+      position: relative;
+      width: 100%;
+      max-width: 680px;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);
+      aspect-ratio: 0.84;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-bg-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      z-index: 1;
+      user-select: none;
+    }
+    .hotspots-container {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .hotspot {
+      position: absolute;
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 6px;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px dashed rgba(37, 99, 235, 0.5);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 2px;
+    }
+    .hotspot:hover {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: #2563eb;
+    }
+    .hotspot.speaking {
+      background: rgba(245, 158, 11, 0.35) !important;
+      border: 2px solid #f59e0b !important;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6) !important;
+    }
+    .hotspot-speaker-icon {
+      background: rgba(255, 255, 255, 0.9);
+      color: #2563eb;
+      font-size: 9px;
+      padding: 1px 3px;
+      border-radius: 3px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .hotspot.speaking .hotspot-speaker-icon {
+      background: #f59e0b;
+      color: #ffffff;
+    }
+
+    .caption-card {
+      width: 100%;
+      max-width: 680px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .caption-english {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+    .caption-translation {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .btn-replay {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-replay:hover { background: #1d4ed8; }
+
+    .fallback-card {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 50%, #fef3c7 100%);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #0f172a;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(2px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-content {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+    }
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .page-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+    .page-row.highlight {
+      background: #fef3c7;
+      border-color: #fde68a;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.65; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 控制面板：簡潔明亮 -->
+  <header>
+    <!-- 指定標題 -->
+    <div class="brand">
+      <div class="brand-title">Journeys:Unit 1 What is a pal</div>
+      <div id="pageBadge" class="page-badge">P.8 (1/29)</div>
+    </div>
+
+    <!-- 工具列按鈕: 保留 <朗讀整頁><圖片管理><匯出HTML><上一頁><下一頁><語速0.7x ,1.0x> 並在同一側 -->
+    <div class="toolbar-side">
+      <!-- <朗讀整頁> -->
+      <button id="btnReadAll" class="btn btn-read">▶ 朗讀整頁</button>
+
+      <!-- <圖片管理> -->
+      <button id="btnOpenManager" class="btn">🖼️ 圖片管理</button>
+
+      <!-- <匯出HTML> -->
+      <button id="btnExport" class="btn">📥 匯出HTML</button>
+
+      <!-- <上一頁> -->
+      <button id="btnPrev" class="btn">◀ 上一頁</button>
+
+      <!-- <下一頁> -->
+      <button id="btnNext" class="btn btn-next">下一頁 ▶</button>
+
+      <!-- <語速0.7x ,1.0x> -->
+      <div class="speed-group">
+        <span class="speed-label">語速</span>
+        <button class="speed-btn active" data-rate="0.7">0.7x</button>
+        <button class="speed-btn" data-rate="1.0">1.0x</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="readerStage" class="reader-stage">
+      <img id="pageImg" class="page-bg-img" alt="教材頁面" style="display: none;">
+      
+      <div id="fallbackCard" class="fallback-card">
+        <div style="font-weight: bold; color: #0284c7; display: flex; justify-content: space-between; font-size: 0.85rem;">
+          <span id="fbSection">Section</span>
+          <span id="fbPage">Page</span>
+        </div>
+        <div style="text-align: center; margin: auto;">
+          <h2 id="fbQuote" style="font-size: 1.75rem; margin-bottom: 8px; color: #0f172a;">What Is a Pal?</h2>
+          <p id="fbSummary" style="color: #64748b; font-size: 0.9rem;">點選「圖片管理」即可為各頁獨立載入您的教材圖片</p>
+          <div style="margin-top: 10px; font-size: 0.8rem; color: #2563eb; background: #eff6ff; padding: 6px 12px; border-radius: 6px; display: inline-block;">
+            已嚴格隔離儲存：9.png 專屬 P.10，10.png 專屬 P.11，零密鑰碰撞
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+          <span>Journeys:Unit 1 What is a pal</span>
+          <span id="fbNum">Page 8</span>
+        </div>
+      </div>
+
+      <div id="hotspotsContainer" class="hotspots-container"></div>
+    </div>
+
+    <!-- 簡潔字幕與重播條 -->
+    <div class="caption-card">
+      <div>
+        <div class="caption-english" id="captionText">點選畫面上任意文字區域，即可發音朗讀 🔊</div>
+        <div class="caption-translation" id="captionTrans">點擊透明框線位置，聆聽美語發音。</div>
+      </div>
+      <button id="btnReplay" class="btn-replay" style="display: none;">🔊 重播</button>
+    </div>
+  </main>
+
+  <!-- 圖片管理 Modal (29 頁獨立槽位) -->
+  <div id="managerModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 800; color: #0f172a;">
+          🖼️ 圖片管理中心（29 頁獨立插槽）
+        </h3>
+        <button id="btnCloseManager" class="btn" style="padding: 4px 8px;">✕ 關閉</button>
+      </div>
+      <div class="modal-body" id="managerList"></div>
+    </div>
+  </div>
+
+  <script>
+    const pages = [
+  {
+    "id": 1,
+    "pageNumber": 8,
+    "fileName": "8.png",
+    "alternateNames": [
+      "p8.png",
+      "page8.png"
+    ],
+    "title": "Unit 1: Opening",
+    "section": "Unit Opener",
+    "summary": "Unit 1 cover with boy riding bicycle",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p8-h1",
+        "text": "Unit 1",
+        "label": "Unit 1",
+        "category": "title",
+        "translation": "第一單元",
+        "box": {
+          "top": 12,
+          "left": 71,
+          "width": 25,
+          "height": 75
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "pageNumber": 10,
+    "fileName": "9.png",
+    "alternateNames": [
+      "10.png",
+      "p10.png",
+      "page10.png"
+    ],
+    "title": "Lesson 1: Words to Know",
+    "section": "Vocabulary",
+    "summary": "High-Frequency Words: play, be, and, help, with, you",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p10-h1",
+        "text": "Lesson 1",
+        "label": "Lesson 1",
+        "category": "title",
+        "translation": "第一課",
+        "box": {
+          "top": 2,
+          "left": 10,
+          "width": 20,
+          "height": 5
+        }
+      },
+      {
+        "id": "p10-h2",
+        "text": "Words to Know",
+        "label": "Words to Know",
+        "category": "title",
+        "translation": "必學單字",
+        "box": {
+          "top": 5,
+          "left": 44,
+          "width": 28,
+          "height": 13
+        }
+      },
+      {
+        "id": "p10-h3",
+        "text": "Read each Context Card.",
+        "label": "Instruction 1",
+        "category": "sentence",
+        "translation": "閱讀每張語境卡片。",
+        "box": {
+          "top": 19.5,
+          "left": 46,
+          "width": 44,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-h4",
+        "text": "Make up a sentence that uses a blue word.",
+        "label": "Instruction 2",
+        "category": "sentence",
+        "translation": "用藍色單字造一個句子。",
+        "box": {
+          "top": 24.5,
+          "left": 46,
+          "width": 44,
+          "height": 8
+        }
+      },
+      {
+        "id": "p10-w1",
+        "text": "play",
+        "label": "Word: play",
+        "category": "vocabulary",
+        "translation": "玩耍",
+        "box": {
+          "top": 45.5,
+          "left": 12,
+          "width": 17,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-w2",
+        "text": "be",
+        "label": "Word: be",
+        "category": "vocabulary",
+        "translation": "是 / 成為",
+        "box": {
+          "top": 50,
+          "left": 12,
+          "width": 17,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-w3",
+        "text": "and",
+        "label": "Word: and",
+        "category": "vocabulary",
+        "translation": "和 / 以及",
+        "box": {
+          "top": 54.5,
+          "left": 12,
+          "width": 17,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-w4",
+        "text": "help",
+        "label": "Word: help",
+        "category": "vocabulary",
+        "translation": "幫助",
+        "box": {
+          "top": 59,
+          "left": 12,
+          "width": 17,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-w5",
+        "text": "with",
+        "label": "Word: with",
+        "category": "vocabulary",
+        "translation": "和…一起",
+        "box": {
+          "top": 63.5,
+          "left": 12,
+          "width": 17,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-w6",
+        "text": "you",
+        "label": "Word: you",
+        "category": "vocabulary",
+        "translation": "你 / 你們",
+        "box": {
+          "top": 68,
+          "left": 12,
+          "width": 17,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p10-c1",
+        "text": "1. play. These pals like to play in the park.",
+        "label": "Card 1: play",
+        "category": "sentence",
+        "translation": "1. 玩耍。這些好夥伴喜歡在公園裡玩耍。",
+        "box": {
+          "top": 35.5,
+          "left": 46.5,
+          "width": 38,
+          "height": 13
+        }
+      },
+      {
+        "id": "p10-c2",
+        "text": "2. be. They like to be on the same team.",
+        "label": "Card 2: be",
+        "category": "sentence",
+        "translation": "2. 是。他們喜歡在同一個隊伍裡。",
+        "box": {
+          "top": 67.5,
+          "left": 46.5,
+          "width": 38,
+          "height": 13
+        }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "pageNumber": 11,
+    "fileName": "10.png",
+    "alternateNames": [
+      "11.png",
+      "p11.png",
+      "page11.png"
+    ],
+    "title": "Lesson 1: Context Cards",
+    "section": "Vocabulary",
+    "summary": "Cards 3, 4, 5, 6: and, help, with, you",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p11-c3",
+        "text": "3. and. The children share the paper and paint.",
+        "label": "Card 3: and",
+        "category": "sentence",
+        "translation": "3. 和。孩子們共同分享紙和顏料。",
+        "box": {
+          "top": 3,
+          "left": 11,
+          "width": 39,
+          "height": 13
+        }
+      },
+      {
+        "id": "p11-c4",
+        "text": "4. help. These pals help each other wash the dog.",
+        "label": "Card 4: help",
+        "category": "sentence",
+        "translation": "4. 幫助。這些好朋友互相幫忙幫狗狗洗澡。",
+        "box": {
+          "top": 3,
+          "left": 52,
+          "width": 39,
+          "height": 13
+        }
+      },
+      {
+        "id": "p11-c5",
+        "text": "5. with. The boy was in a show with his pals.",
+        "label": "Card 5: with",
+        "category": "sentence",
+        "translation": "5. 和。小男孩與他的朋友們一起參加表演。",
+        "box": {
+          "top": 35.5,
+          "left": 11,
+          "width": 39,
+          "height": 13
+        }
+      },
+      {
+        "id": "p11-c6",
+        "text": "6. you. I like when you play this game with me.",
+        "label": "Card 6: you",
+        "category": "sentence",
+        "translation": "6. 你。我喜歡你跟我一起玩這個遊戲。",
+        "box": {
+          "top": 35.5,
+          "left": 52,
+          "width": 39,
+          "height": 13
+        }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "pageNumber": 12,
+    "fileName": "11.png",
+    "alternateNames": [
+      "12.png",
+      "p12.png",
+      "page12.png"
+    ],
+    "title": "Read and Comprehend",
+    "section": "Comprehension Skill",
+    "summary": "Target Skill: Main Idea and Details. Target Strategy: Summarize",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p12-h1",
+        "text": "Read and Comprehend",
+        "label": "Read and Comprehend",
+        "category": "title",
+        "translation": "閱讀與理解",
+        "box": {
+          "top": 5.5,
+          "left": 24,
+          "width": 46,
+          "height": 13.5
+        }
+      },
+      {
+        "id": "p12-h2",
+        "text": "Target Skill: Main Idea. As you read, look for one big idea that the selection is about. This is the topic. The main idea is the most important idea about the topic. Details are bits of information that tell more about the main idea. You can list the main idea and details about a topic on a web like this.",
+        "label": "Target Skill: Main Idea",
+        "category": "sentence",
+        "translation": "目標技能：中心思想。閱讀時，尋找整篇文章圍繞的核心觀點。這就是主題。細節是提供更多資訊的補充說明。",
+        "box": {
+          "top": 22,
+          "left": 25,
+          "width": 62,
+          "height": 35
+        }
+      },
+      {
+        "id": "p12-w1",
+        "text": "Main Idea",
+        "label": "Main Idea (Center)",
+        "category": "vocabulary",
+        "translation": "中心思想（主旨）",
+        "box": {
+          "top": 63,
+          "left": 48,
+          "width": 19.5,
+          "height": 8
+        }
+      },
+      {
+        "id": "p12-w2",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 58.5,
+          "left": 33,
+          "width": 16,
+          "height": 6.5
+        }
+      },
+      {
+        "id": "p12-w3",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 58.5,
+          "left": 66.5,
+          "width": 16,
+          "height": 6.5
+        }
+      },
+      {
+        "id": "p12-w4",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 69,
+          "left": 33,
+          "width": 16,
+          "height": 6.5
+        }
+      },
+      {
+        "id": "p12-w5",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 69,
+          "left": 66.5,
+          "width": 16,
+          "height": 6.5
+        }
+      },
+      {
+        "id": "p12-h3",
+        "text": "Target Strategy: Summarize. Stop to tell important ideas as you read.",
+        "label": "Target Strategy: Summarize",
+        "category": "sentence",
+        "translation": "目標策略：總結摘要。邊讀邊停下來複述重要的想法。",
+        "box": {
+          "top": 78,
+          "left": 25,
+          "width": 62,
+          "height": 13.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "pageNumber": 13,
+    "fileName": "12.png",
+    "alternateNames": [
+      "13.png",
+      "p13.png",
+      "page13.png"
+    ],
+    "title": "Preview the Topic: Friendship",
+    "section": "Preview",
+    "summary": "How do pals act? Introduction to friendship",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p13-h1",
+        "text": "Preview the Topic: Friendship",
+        "label": "Preview Topic: Friendship",
+        "category": "title",
+        "translation": "預覽主題：友誼",
+        "box": {
+          "top": 9.5,
+          "left": 15,
+          "width": 32,
+          "height": 6.5
+        }
+      },
+      {
+        "id": "p13-s1",
+        "text": "How do pals act?",
+        "label": "How do pals act?",
+        "category": "question",
+        "translation": "夥伴們通常怎麼互動？",
+        "box": {
+          "top": 18,
+          "left": 15.5,
+          "width": 32,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p13-s2",
+        "text": "Pals play together.",
+        "label": "Pals play together.",
+        "category": "sentence",
+        "translation": "夥伴一起玩耍。",
+        "box": {
+          "top": 22,
+          "left": 15.5,
+          "width": 32,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p13-s3",
+        "text": "They help each other.",
+        "label": "They help each other.",
+        "category": "sentence",
+        "translation": "他們互相幫忙。",
+        "box": {
+          "top": 26,
+          "left": 15.5,
+          "width": 35,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p13-s4",
+        "text": "Pals take turns.",
+        "label": "Pals take turns.",
+        "category": "sentence",
+        "translation": "夥伴們輪流玩。",
+        "box": {
+          "top": 30,
+          "left": 15.5,
+          "width": 26,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p13-s5",
+        "text": "They are kind.",
+        "label": "They are kind.",
+        "category": "sentence",
+        "translation": "他們彼此善良友好。",
+        "box": {
+          "top": 34,
+          "left": 15.5,
+          "width": 25,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p13-s6",
+        "text": "Pals have fun.",
+        "label": "Pals have fun.",
+        "category": "sentence",
+        "translation": "夥伴在一起充滿歡樂。",
+        "box": {
+          "top": 38,
+          "left": 15.5,
+          "width": 25,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p13-s7",
+        "text": "What do you do with your pals?",
+        "label": "What do you do with your pals?",
+        "category": "question",
+        "translation": "你平時和你的好朋友做些什麼？",
+        "box": {
+          "top": 42,
+          "left": 15.5,
+          "width": 47,
+          "height": 4.8
+        }
+      },
+      {
+        "id": "p13-s8",
+        "text": "You will learn all about pals in What Is a Pal?",
+        "label": "Book teaser",
+        "category": "sentence",
+        "translation": "你將在《什麼是好朋友？》一書中了解好朋友的一切！",
+        "box": {
+          "top": 46.2,
+          "left": 15.5,
+          "width": 45,
+          "height": 9
+        }
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "pageNumber": 14,
+    "fileName": "13.png",
+    "alternateNames": [
+      "14.png",
+      "p14.png",
+      "page14.png"
+    ],
+    "title": "Anchor Text: Meet the Author",
+    "section": "Author & Genre",
+    "summary": "Meet the Author and Photographer: Nina Crews",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p14-h1",
+        "text": "Lesson 1: Anchor Text",
+        "label": "Anchor Text",
+        "category": "title",
+        "translation": "第一課：核心課文",
+        "box": {
+          "top": 2.5,
+          "left": 5,
+          "width": 30,
+          "height": 16
+        }
+      },
+      {
+        "id": "p14-h2",
+        "text": "Meet the Author and Photographer: Nina Crews",
+        "label": "Author Title",
+        "category": "title",
+        "translation": "認識作者兼攝影師：尼娜·克魯斯",
+        "box": {
+          "top": 16,
+          "left": 41.5,
+          "width": 34,
+          "height": 10.5
+        }
+      },
+      {
+        "id": "p14-b1",
+        "text": "Nina Crews comes from a very creative family. Her parents, Donald Crews and Ann Jonas, are both well-known artists. For her own artwork, Ms. Crews likes to make collages out of photos.",
+        "label": "Nina Crews Biography",
+        "category": "sentence",
+        "translation": "尼娜·克魯斯來自一個非常有創意的家庭。她的父母唐納德·克魯斯和安·喬納斯都是著名的藝術家。對於她自己的藝術作品，克魯斯女士喜歡用照片製作拼貼畫。",
+        "box": {
+          "top": 27,
+          "left": 41.5,
+          "width": 42,
+          "height": 32
+        }
+      },
+      {
+        "id": "p14-t1",
+        "text": "Target Skill: Main Idea. Tell the important idea about the topic.",
+        "label": "Target Skill",
+        "category": "sentence",
+        "translation": "目標技能：中心思想。說出關於主題的重要觀點。",
+        "box": {
+          "top": 38,
+          "left": 5.5,
+          "width": 28,
+          "height": 13
+        }
+      },
+      {
+        "id": "p14-g1",
+        "text": "Genre: Informational text tells about things that are real. Look for words that tell information and photographs that show details about the real world.",
+        "label": "Genre: Informational Text",
+        "category": "sentence",
+        "translation": "體裁：說明文（非虛構讀物），介紹真實存在的人事物。留心傳遞信息的文字以及展示真實世界細節的照片。",
+        "box": {
+          "top": 61,
+          "left": 5.5,
+          "width": 28,
+          "height": 26
+        }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "pageNumber": 15,
+    "fileName": "14.png",
+    "alternateNames": [
+      "15.png",
+      "p15.png",
+      "page15.png"
+    ],
+    "title": "What Is a Pal?",
+    "section": "Story Page 15",
+    "summary": "Story title and Essential Question",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p15-h1",
+        "text": "What Is a Pal?",
+        "label": "Story Title",
+        "category": "title",
+        "translation": "什麼是好朋友？",
+        "box": {
+          "top": 5,
+          "left": 13,
+          "width": 78,
+          "height": 9.5
+        }
+      },
+      {
+        "id": "p15-h2",
+        "text": "written and photographed by Nina Crews",
+        "label": "Byline",
+        "category": "sentence",
+        "translation": "文 / 攝影：尼娜·克魯斯",
+        "box": {
+          "top": 15,
+          "left": 13,
+          "width": 78,
+          "height": 5
+        }
+      },
+      {
+        "id": "p15-q1",
+        "text": "Essential Question: What is important about being a friend?",
+        "label": "Essential Question",
+        "category": "question",
+        "translation": "核心問題：作為一個朋友，什麼是最重要的？",
+        "box": {
+          "top": 80,
+          "left": 57.5,
+          "width": 34,
+          "height": 15
+        }
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "pageNumber": 16,
+    "fileName": "15.png",
+    "alternateNames": [
+      "16.png",
+      "p16.png",
+      "page16.png"
+    ],
+    "title": "A pal can help you.",
+    "section": "Story Page 16",
+    "summary": "Children in the garden",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p16-s1",
+        "text": "A pal can help you.",
+        "label": "A pal can help you.",
+        "category": "sentence",
+        "translation": "好朋友可以幫助你。",
+        "box": {
+          "top": 84.5,
+          "left": 23,
+          "width": 54,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "pageNumber": 17,
+    "fileName": "16.png",
+    "alternateNames": [
+      "17.png",
+      "p17.png",
+      "page17.png"
+    ],
+    "title": "Sam and Nat can help Dan.",
+    "section": "Story Page 17",
+    "summary": "Boy watering flowers with hose",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p17-s1",
+        "text": "Sam and Nat can help Dan.",
+        "label": "Sam and Nat can help Dan.",
+        "category": "sentence",
+        "translation": "山姆和娜特可以幫助丹。",
+        "box": {
+          "top": 84.5,
+          "left": 20,
+          "width": 64,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "pageNumber": 18,
+    "fileName": "17.png",
+    "alternateNames": [
+      "18.png",
+      "p18.png",
+      "page18.png"
+    ],
+    "title": "A pal can play with you.",
+    "section": "Story Page 18",
+    "summary": "Kids running happily on green grass",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p18-s1",
+        "text": "A pal can play with you.",
+        "label": "A pal can play with you.",
+        "category": "sentence",
+        "translation": "好朋友可以和你一起玩耍。",
+        "box": {
+          "top": 84.5,
+          "left": 18,
+          "width": 64,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "pageNumber": 19,
+    "fileName": "18.png",
+    "alternateNames": [
+      "19.png",
+      "p19.png",
+      "page19.png"
+    ],
+    "title": "Tad, Cam, and Nan can play.",
+    "section": "Story Page 19",
+    "summary": "Girl running on the lawn",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p19-s1",
+        "text": "Tad, Cam, and Nan can play.",
+        "label": "Tad, Cam, and Nan can play.",
+        "category": "sentence",
+        "translation": "泰德、卡姆和南都可以一起玩。",
+        "box": {
+          "top": 84.5,
+          "left": 19,
+          "width": 66,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "pageNumber": 20,
+    "fileName": "19.png",
+    "alternateNames": [
+      "20.png",
+      "p20.png",
+      "page20.png"
+    ],
+    "title": "A pal can be a pet.",
+    "section": "Story Page 20",
+    "summary": "Boy sitting with friendly dog",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p20-s1",
+        "text": "A pal can be a pet.",
+        "label": "A pal can be a pet.",
+        "category": "sentence",
+        "translation": "好朋友也可以是一隻寵物。",
+        "box": {
+          "top": 84.5,
+          "left": 27,
+          "width": 52,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "pageNumber": 21,
+    "fileName": "20.png",
+    "alternateNames": [
+      "21.png",
+      "p21.png",
+      "page21.png"
+    ],
+    "title": "A pal can be Dad.",
+    "section": "Story Page 21",
+    "summary": "Dad and daughter petting a sheep",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p21-s1",
+        "text": "A pal can be Dad.",
+        "label": "A pal can be Dad.",
+        "category": "sentence",
+        "translation": "好朋友也可以是爸爸。",
+        "box": {
+          "top": 84.5,
+          "left": 30,
+          "width": 46,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "pageNumber": 22,
+    "fileName": "21.png",
+    "alternateNames": [
+      "22.png",
+      "p22.png",
+      "page22.png"
+    ],
+    "title": "A pal can be with you.",
+    "section": "Story Page 22",
+    "summary": "Two kids reading a book together in the library",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p22-s1",
+        "text": "A pal can be with you.",
+        "label": "A pal can be with you.",
+        "category": "sentence",
+        "translation": "好朋友可以陪伴在你身邊。",
+        "box": {
+          "top": 84.5,
+          "left": 22,
+          "width": 56,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "pageNumber": 23,
+    "fileName": "22.png",
+    "alternateNames": [
+      "23.png",
+      "p23.png",
+      "page23.png"
+    ],
+    "title": "A pal is fun to be with!",
+    "section": "Story Page 23",
+    "summary": "Two kids scootering down the sidewalk",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p23-s1",
+        "text": "A pal is fun to be with!",
+        "label": "A pal is fun to be with!",
+        "category": "sentence",
+        "translation": "和好朋友在一起真的很有趣！",
+        "box": {
+          "top": 84.5,
+          "left": 23,
+          "width": 56,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "pageNumber": 24,
+    "fileName": "23.png",
+    "alternateNames": [
+      "24.png",
+      "p24.png",
+      "page24.png"
+    ],
+    "title": "Friends Share Adventures",
+    "section": "Story Page 24",
+    "summary": "Two joyful girls climbing inside a big tree",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p24-s1",
+        "text": "Pals have fun together! Friends share every adventure.",
+        "label": "Friends share adventures",
+        "category": "sentence",
+        "translation": "好朋友在一起真快樂！朋友共同分享每一次探險。",
+        "box": {
+          "top": 78,
+          "left": 20,
+          "width": 60,
+          "height": 12
+        }
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "pageNumber": 25,
+    "fileName": "24.png",
+    "alternateNames": [
+      "25.png",
+      "p25.png",
+      "page25.png"
+    ],
+    "title": "Are you a pal?",
+    "section": "Story Page 25",
+    "summary": "Boy sitting smiling in the tree",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p25-s1",
+        "text": "Are you a pal?",
+        "label": "Are you a pal?",
+        "category": "question",
+        "translation": "你是一位好朋友嗎？",
+        "box": {
+          "top": 84.5,
+          "left": 29,
+          "width": 42,
+          "height": 8.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "pageNumber": 26,
+    "fileName": "25.png",
+    "alternateNames": [
+      "26.png",
+      "p26.png",
+      "page26.png"
+    ],
+    "title": "Comprehension: Dig Deeper",
+    "section": "Dig Deeper",
+    "summary": "Analyze the Text: Main Idea and Web Diagram",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p26-h1",
+        "text": "Comprehension: Dig Deeper",
+        "label": "Dig Deeper",
+        "category": "title",
+        "translation": "深入理解",
+        "box": {
+          "top": 5.5,
+          "left": 28,
+          "width": 34,
+          "height": 8
+        }
+      },
+      {
+        "id": "p26-h2",
+        "text": "How to Analyze the Text. Use these pages to learn about Main Idea and Informational Text. Then read What Is a Pal? again.",
+        "label": "How to Analyze the Text",
+        "category": "sentence",
+        "translation": "如何分析課文：透過這些頁面了解中心思想與說明文。然後再次閱讀《什麼是好朋友？》。",
+        "box": {
+          "top": 13.5,
+          "left": 28,
+          "width": 54,
+          "height": 14
+        }
+      },
+      {
+        "id": "p26-p1",
+        "text": "Main Idea. In What Is a Pal?, you read about what it means to be a pal. This is the topic. The main idea is the most important idea about the topic. What is the main idea? Details are bits of information about the main idea. What details did you find out about pals? Use a web to show the main idea and details.",
+        "label": "Main Idea Explanation",
+        "category": "sentence",
+        "translation": "中心思想：在《什麼是好朋友？》中，你讀到了什麼叫作好朋友。這就是主題。主旨是關於主題最重要的觀點。細節則是補充資訊。",
+        "box": {
+          "top": 30.5,
+          "left": 18,
+          "width": 62,
+          "height": 36
+        }
+      },
+      {
+        "id": "p26-w1",
+        "text": "Main Idea",
+        "label": "Main Idea (Center)",
+        "category": "vocabulary",
+        "translation": "中心思想",
+        "box": {
+          "top": 72.5,
+          "left": 37,
+          "width": 18,
+          "height": 7
+        }
+      },
+      {
+        "id": "p26-w2",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 68,
+          "left": 23,
+          "width": 15.5,
+          "height": 6
+        }
+      },
+      {
+        "id": "p26-w3",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 68,
+          "left": 56,
+          "width": 15.5,
+          "height": 6
+        }
+      },
+      {
+        "id": "p26-w4",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 77.5,
+          "left": 23,
+          "width": 15.5,
+          "height": 6
+        }
+      },
+      {
+        "id": "p26-w5",
+        "text": "Detail",
+        "label": "Detail",
+        "category": "vocabulary",
+        "translation": "細節",
+        "box": {
+          "top": 77.5,
+          "left": 56,
+          "width": 15.5,
+          "height": 6
+        }
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "pageNumber": 27,
+    "fileName": "26.png",
+    "alternateNames": [
+      "27.png",
+      "p27.png",
+      "page27.png"
+    ],
+    "title": "Genre: Informational Text",
+    "section": "Genre Study",
+    "summary": "Facts and Photos in Informational Text",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p27-h1",
+        "text": "Genre: Informational Text",
+        "label": "Genre Title",
+        "category": "title",
+        "translation": "體裁：說明文",
+        "box": {
+          "top": 8.5,
+          "left": 18,
+          "width": 49,
+          "height": 5.5
+        }
+      },
+      {
+        "id": "p27-p1",
+        "text": "What Is a Pal? has details that are facts. Facts are true information. What facts do you learn from the words?",
+        "label": "Facts paragraph",
+        "category": "sentence",
+        "translation": "《什麼是好朋友？》包含身為事實的細節。事實是真實無誤的資訊。你從字句中學到了哪些事實？",
+        "box": {
+          "top": 14,
+          "left": 18,
+          "width": 59,
+          "height": 12
+        }
+      },
+      {
+        "id": "p27-p2",
+        "text": "The pictures show real kids who are pals. What information do you learn from the pictures?",
+        "label": "Pictures paragraph",
+        "category": "sentence",
+        "translation": "照片展示了現實生活中身為夥伴的真實孩子們。你從照片中學到了什麼資訊？",
+        "box": {
+          "top": 26,
+          "left": 18,
+          "width": 56,
+          "height": 11.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "pageNumber": 28,
+    "fileName": "27.png",
+    "alternateNames": [
+      "28.png",
+      "p28.png",
+      "page28.png"
+    ],
+    "title": "Your Turn: Classroom Conversation",
+    "section": "Speaking & Listening",
+    "summary": "Turn and Talk & Classroom Conversation Questions",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p28-h1",
+        "text": "Your Turn: Return to the Essential Question",
+        "label": "Your Turn Header",
+        "category": "title",
+        "translation": "輪到你了：回到核心問題",
+        "box": {
+          "top": 9,
+          "left": 24,
+          "width": 54,
+          "height": 14.5
+        }
+      },
+      {
+        "id": "p28-t1",
+        "text": "Turn and Talk. What is important about being a friend? What details does the selection tell about being a pal? What else do you know about being a pal? Tell your partner. Speak in complete sentences.",
+        "label": "Turn and Talk",
+        "category": "sentence",
+        "translation": "轉身交流。做朋友最重要的是什麼？課文提到了哪些關於好朋友的細節？告訴你的同伴，用完整的句子表達。",
+        "box": {
+          "top": 24.5,
+          "left": 15,
+          "width": 47,
+          "height": 31
+        }
+      },
+      {
+        "id": "p28-c1",
+        "text": "Classroom Conversation. Talk about these questions with your class.",
+        "label": "Classroom Conversation",
+        "category": "sentence",
+        "translation": "課堂對話。和全班一起討論這些問題。",
+        "box": {
+          "top": 59,
+          "left": 16,
+          "width": 65,
+          "height": 10
+        }
+      },
+      {
+        "id": "p28-q1",
+        "text": "1. Who could be a pal?",
+        "label": "Question 1",
+        "category": "question",
+        "translation": "1. 誰可以是好朋友？",
+        "box": {
+          "top": 69,
+          "left": 16,
+          "width": 52,
+          "height": 5
+        }
+      },
+      {
+        "id": "p28-q2",
+        "text": "2. What things from What Is a Pal? have you done with friends?",
+        "label": "Question 2",
+        "category": "question",
+        "translation": "2. 在課文《什麼是好朋友？》中，有哪些事是你曾經和朋友一起做過的？",
+        "box": {
+          "top": 74,
+          "left": 16,
+          "width": 66,
+          "height": 8.5
+        }
+      },
+      {
+        "id": "p28-q3",
+        "text": "3. What words tell about being a good pal?",
+        "label": "Question 3",
+        "category": "question",
+        "translation": "3. 哪些詞彙描述了怎樣成為一個好朋友？",
+        "box": {
+          "top": 82,
+          "left": 16,
+          "width": 68,
+          "height": 5.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "pageNumber": 29,
+    "fileName": "28.png",
+    "alternateNames": [
+      "29.png",
+      "p29.png",
+      "page29.png"
+    ],
+    "title": "Write About Reading",
+    "section": "Writing Response",
+    "summary": "Response and Writing Tip",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p29-h1",
+        "text": "Write About Reading",
+        "label": "Write About Reading",
+        "category": "title",
+        "translation": "讀後寫作",
+        "box": {
+          "top": 10,
+          "left": 13.5,
+          "width": 45,
+          "height": 5
+        }
+      },
+      {
+        "id": "p29-p1",
+        "text": "Response. Read the last page of the selection again. Write a sentence to answer the question. Draw a picture to go with your answer.",
+        "label": "Response Prompt",
+        "category": "sentence",
+        "translation": "回答：再次閱讀課文的最後一頁。寫一句話回答那個問題，並畫一幅畫來配合你的回答。",
+        "box": {
+          "top": 15,
+          "left": 14,
+          "width": 50,
+          "height": 20
+        }
+      },
+      {
+        "id": "p29-t1",
+        "text": "Writing Tip: Read your answer. Add details to give information. Begin your sentence with a capital letter.",
+        "label": "Writing Tip",
+        "category": "sentence",
+        "translation": "寫作小秘訣：讀一讀你的答案。加入細節以補充信息。句子開頭要用大寫字母。",
+        "box": {
+          "top": 62.5,
+          "left": 48,
+          "width": 42,
+          "height": 21
+        }
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "pageNumber": 30,
+    "fileName": "29.png",
+    "alternateNames": [
+      "30.png",
+      "p30.png",
+      "page30.png"
+    ],
+    "title": "Poetry: Friends Forever & Damon & Blue",
+    "section": "Poetry",
+    "summary": "Poems about friendship by Nikki Grimes",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p30-h1",
+        "text": "Lesson 1 Poetry: Friends Forever",
+        "label": "Friends Forever Title",
+        "category": "title",
+        "translation": "第一課詩歌：永遠的朋友",
+        "box": {
+          "top": 7,
+          "left": 45,
+          "width": 40,
+          "height": 19
+        }
+      },
+      {
+        "id": "p30-p1",
+        "text": "How can you be a good friend? You can play with your friends. You can share with friends and help them.",
+        "label": "Intro prompt",
+        "category": "sentence",
+        "translation": "你如何成為一個好朋友？你可以和朋友一起玩，可以和朋友分享並幫助他們。",
+        "box": {
+          "top": 28,
+          "left": 39.5,
+          "width": 49,
+          "height": 16
+        }
+      },
+      {
+        "id": "p30-g1",
+        "text": "Genre: Poetry uses words in interesting ways to show pictures and feelings.",
+        "label": "Genre: Poetry",
+        "category": "sentence",
+        "translation": "體裁：詩歌用有趣的方式組合字詞，勾勒出生動的畫面和情感。",
+        "box": {
+          "top": 44,
+          "left": 6,
+          "width": 27,
+          "height": 12
+        }
+      },
+      {
+        "id": "p30-f1",
+        "text": "Text Focus: When words rhyme, they end with the same sound, like blue and two. Clap when you hear words that rhyme at the end of the lines.",
+        "label": "Text Focus: Rhyme",
+        "category": "sentence",
+        "translation": "課文焦點：押韻。當詞語押韻時，它們結尾的發音相同（例如 blue 和 two）。聽到句尾押韻時請拍手！",
+        "box": {
+          "top": 61.5,
+          "left": 6,
+          "width": 27,
+          "height": 20
+        }
+      },
+      {
+        "id": "p30-pt1",
+        "text": "Damon & Blue",
+        "label": "Poem Title",
+        "category": "title",
+        "translation": "達蒙與布魯",
+        "box": {
+          "top": 53.5,
+          "left": 43.5,
+          "width": 36,
+          "height": 6
+        }
+      },
+      {
+        "id": "p30-s1",
+        "text": "Damon & Blue, Just us two, Cruising up the avenue.",
+        "label": "Stanza 1",
+        "category": "poem",
+        "translation": "達蒙和布魯，就我們兩個，悠閒地沿著大道漫步。",
+        "box": {
+          "top": 60,
+          "left": 44.5,
+          "width": 37,
+          "height": 12
+        }
+      },
+      {
+        "id": "p30-s2",
+        "text": "You strut, you glide, But mark our stride, Can't beat us when we're side by side. by Nikki Grimes.",
+        "label": "Stanza 2",
+        "category": "poem",
+        "translation": "你神氣地昂首闊步，但看看我們的步伐，當我們肩並肩時誰也比不上！——尼基·格萊姆斯",
+        "box": {
+          "top": 72,
+          "left": 44.5,
+          "width": 40,
+          "height": 21
+        }
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "pageNumber": 31,
+    "fileName": "30.png",
+    "alternateNames": [
+      "31.png",
+      "p31.png",
+      "page31.png"
+    ],
+    "title": "Poetry: Wait for Me",
+    "section": "Poetry",
+    "summary": "Wait for Me by Sarah Wilson",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p31-h1",
+        "text": "Wait for Me by Sarah Wilson",
+        "label": "Wait for Me Title",
+        "category": "title",
+        "translation": "《等等我》——薩拉·威爾遜",
+        "box": {
+          "top": 8.5,
+          "left": 23.5,
+          "width": 35,
+          "height": 6
+        }
+      },
+      {
+        "id": "p31-s1",
+        "text": "Wait for me and I'll be there and we'll walk home together,",
+        "label": "Stanza 1",
+        "category": "poem",
+        "translation": "等等我，我就來，我們一起走路回家，",
+        "box": {
+          "top": 14.5,
+          "left": 24,
+          "width": 45,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p31-s2",
+        "text": "if it's raining puddle pails or if it's sunny weather.",
+        "label": "Stanza 2",
+        "category": "poem",
+        "translation": "無論是下起水窪滿地的大雨，還是陽光燦爛的大晴天。",
+        "box": {
+          "top": 27,
+          "left": 24,
+          "width": 37,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p31-s3",
+        "text": "Wait for me and I'll be there and we'll walk home together.",
+        "label": "Stanza 3",
+        "category": "poem",
+        "translation": "等等我，我就來，我們一起走回家。",
+        "box": {
+          "top": 39.5,
+          "left": 24,
+          "width": 46,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p31-s4",
+        "text": "You wear red and I'll wear blue, and we'll be friends forever.",
+        "label": "Stanza 4",
+        "category": "poem",
+        "translation": "你穿紅色，我穿藍色，我們永遠是好朋友。",
+        "box": {
+          "top": 52,
+          "left": 24,
+          "width": 43,
+          "height": 12
+        }
+      },
+      {
+        "id": "p31-b1",
+        "text": "by Sarah Wilson",
+        "label": "Byline",
+        "category": "sentence",
+        "translation": "作者：薩拉·威爾遜",
+        "box": {
+          "top": 64,
+          "left": 40.5,
+          "width": 21,
+          "height": 4.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "pageNumber": 32,
+    "fileName": "31.png",
+    "alternateNames": [
+      "32.png",
+      "p32.png",
+      "page32.png"
+    ],
+    "title": "Poetry: Jambo",
+    "section": "Poetry & Response",
+    "summary": "Jambo by Sundaira Morninghouse & Respond to Poetry",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p32-h1",
+        "text": "Jambo",
+        "label": "Jambo Title",
+        "category": "title",
+        "translation": "瞻博（斯瓦希里語：你好）",
+        "box": {
+          "top": 9,
+          "left": 11.5,
+          "width": 22,
+          "height": 6.5
+        }
+      },
+      {
+        "id": "p32-c1",
+        "text": "Jambo Jambo ambo ambo mbo mbo bo bo bo o o o",
+        "label": "Jambo Rhyme 1",
+        "category": "poem",
+        "translation": "Jambo Jambo ambo ambo mbo mbo bo bo bo o o o",
+        "box": {
+          "top": 16,
+          "left": 11.5,
+          "width": 26,
+          "height": 17
+        }
+      },
+      {
+        "id": "p32-c2",
+        "text": "bo bo bo mbo mbo ambo ambo Jambo Jambo",
+        "label": "Jambo Rhyme 2",
+        "category": "poem",
+        "translation": "bo bo bo mbo mbo ambo ambo Jambo Jambo",
+        "box": {
+          "top": 35,
+          "left": 11.5,
+          "width": 26,
+          "height": 15.5
+        }
+      },
+      {
+        "id": "p32-c3",
+        "text": "HI! HELLO! Did you Did you did you know Jambo means hello hello! by Sundaira Morninghouse.",
+        "label": "Jambo Meaning",
+        "category": "poem",
+        "translation": "嗨！你好！你知道嗎？Jambo 的意思就是你好、你好！——桑黛拉·晨屋",
+        "box": {
+          "top": 50.5,
+          "left": 11.5,
+          "width": 26,
+          "height": 26.5
+        }
+      },
+      {
+        "id": "p32-r1",
+        "text": "Respond to Poetry. Listen to the poems again. Join in! Say more rhyming lines that could be added to one of the poems.",
+        "label": "Respond to Poetry",
+        "category": "activity",
+        "translation": "對詩歌作出回應：再聽一遍這些詩歌，一起加入跟讀！試著說出更多可以加進詩歌中的押韻句子。",
+        "box": {
+          "top": 15,
+          "left": 51,
+          "width": 35,
+          "height": 28.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "pageNumber": 33,
+    "fileName": "32.png",
+    "alternateNames": [
+      "33.png",
+      "p33.png",
+      "page33.png"
+    ],
+    "title": "Compare Texts",
+    "section": "Reading Connections",
+    "summary": "Text to Text, Text to Self, Text to World",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p33-h1",
+        "text": "Compare Texts",
+        "label": "Compare Texts Title",
+        "category": "title",
+        "translation": "文本對比",
+        "box": {
+          "top": 6,
+          "left": 42.5,
+          "width": 48,
+          "height": 7.5
+        }
+      },
+      {
+        "id": "p33-t1",
+        "text": "Text to Text: Compare Friends. How are the friends in the poems like the pals in the selection? How are they different? Make a chart.",
+        "label": "Text to Text",
+        "category": "activity",
+        "translation": "文本與文本連結：比較朋友。詩歌中的朋友與課文中的夥伴有什麼相同之處？有什麼不同？做一個圖表。",
+        "box": {
+          "top": 22,
+          "left": 17.5,
+          "width": 62,
+          "height": 18
+        }
+      },
+      {
+        "id": "p33-t2",
+        "text": "Text to Self: Write Sentences. Write sentences to tell your classmates about favorite things you do with your pals.",
+        "label": "Text to Self",
+        "category": "activity",
+        "translation": "文本與自我連結：寫句子。寫幾句話告訴同學你平時最喜歡和好朋友一起做的事。",
+        "box": {
+          "top": 42,
+          "left": 17.5,
+          "width": 55,
+          "height": 18
+        }
+      },
+      {
+        "id": "p33-t3",
+        "text": "Text to World: Describing Words. Read the poems again. Find words that tell what the friends look like. Find words that tell what they see in their world and help show how they feel.",
+        "label": "Text to World",
+        "category": "activity",
+        "translation": "文本與世界連結：描述性詞彙。再次閱讀詩歌，找出描述朋友們外貌的詞彙，以及描述他們看到的世界與內心感受的詞彙。",
+        "box": {
+          "top": 62.5,
+          "left": 17.5,
+          "width": 63,
+          "height": 22
+        }
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "pageNumber": 34,
+    "fileName": "33.png",
+    "alternateNames": [
+      "34.png",
+      "p34.png",
+      "page34.png"
+    ],
+    "title": "Grammar: Nouns",
+    "section": "Grammar",
+    "summary": "Nouns for People, Animals, Places, and Things",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p34-h1",
+        "text": "Grammar: Nouns. Some words name people or animals. Some words name places or things. Words that name people, animals, places, or things are called nouns.",
+        "label": "Grammar: What is a Noun?",
+        "category": "grammar",
+        "translation": "文法：名詞。有些詞代表人物或動物，有些詞代表地點或事物。代表人物、動物、地點或事物的詞就叫做名詞。",
+        "box": {
+          "top": 8.5,
+          "left": 10,
+          "width": 66,
+          "height": 24.5
+        }
+      },
+      {
+        "id": "p34-p1",
+        "text": "Nouns for People: boy, dad",
+        "label": "People Nouns",
+        "category": "grammar",
+        "translation": "表示人物的名詞：男孩、爸爸",
+        "box": {
+          "top": 34,
+          "left": 14,
+          "width": 29,
+          "height": 27.5
+        }
+      },
+      {
+        "id": "p34-a1",
+        "text": "Nouns for Animals: dog, cat",
+        "label": "Animals Nouns",
+        "category": "grammar",
+        "translation": "表示動物的名詞：狗、貓",
+        "box": {
+          "top": 34,
+          "left": 49,
+          "width": 29.5,
+          "height": 27.5
+        }
+      },
+      {
+        "id": "p34-pl1",
+        "text": "Nouns for Places: house, sky, garden",
+        "label": "Places Nouns",
+        "category": "grammar",
+        "translation": "表示地點的名詞：房子、天空、花園",
+        "box": {
+          "top": 65,
+          "left": 14,
+          "width": 29,
+          "height": 26.5
+        }
+      },
+      {
+        "id": "p34-th1",
+        "text": "Nouns for Things: book, door, bed",
+        "label": "Things Nouns",
+        "category": "grammar",
+        "translation": "表示事物的名詞：書本、門、床鋪",
+        "box": {
+          "top": 65,
+          "left": 49,
+          "width": 29.5,
+          "height": 26.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "pageNumber": 35,
+    "fileName": "34.png",
+    "alternateNames": [
+      "35.png",
+      "p35.png",
+      "page35.png"
+    ],
+    "title": "Try This! & Grammar in Writing",
+    "section": "Grammar Practice",
+    "summary": "Naming nouns: mom, room, city, bird, clock, girl",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p35-h1",
+        "text": "Try This! Talk about each picture with a partner. Name the nouns you see. Then write a noun from the box to name each picture. Use another sheet of paper.",
+        "label": "Try This Instructions",
+        "category": "activity",
+        "translation": "試試看！和同伴討論每張圖片，說出你看到的名詞。然後從方框中選出一個名詞為每張圖片命名。",
+        "box": {
+          "top": 6,
+          "left": 10,
+          "width": 77,
+          "height": 18.5
+        }
+      },
+      {
+        "id": "p35-bank",
+        "text": "Word Bank: mom, room, city, bird, clock, girl",
+        "label": "Word Bank",
+        "category": "vocabulary",
+        "translation": "字詞庫：媽媽、房間、城市、鳥、時鐘、女孩",
+        "box": {
+          "top": 29.5,
+          "left": 19,
+          "width": 65,
+          "height": 5.5
+        }
+      },
+      {
+        "id": "p35-pic1",
+        "text": "1. bird",
+        "label": "Picture 1: bird",
+        "category": "vocabulary",
+        "translation": "1. 鳥（鸚鵡）",
+        "box": {
+          "top": 35.5,
+          "left": 17.5,
+          "width": 30,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p35-pic2",
+        "text": "2. mom",
+        "label": "Picture 2: mom",
+        "category": "vocabulary",
+        "translation": "2. 媽媽",
+        "box": {
+          "top": 48,
+          "left": 17.5,
+          "width": 30,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p35-pic3",
+        "text": "3. clock",
+        "label": "Picture 3: clock",
+        "category": "vocabulary",
+        "translation": "3. 時鐘",
+        "box": {
+          "top": 61,
+          "left": 17.5,
+          "width": 30,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p35-pic4",
+        "text": "4. city",
+        "label": "Picture 4: city",
+        "category": "vocabulary",
+        "translation": "4. 城市",
+        "box": {
+          "top": 35.5,
+          "left": 54,
+          "width": 30,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p35-pic5",
+        "text": "5. girl",
+        "label": "Picture 5: girl",
+        "category": "vocabulary",
+        "translation": "5. 女孩",
+        "box": {
+          "top": 48,
+          "left": 54,
+          "width": 30,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p35-pic6",
+        "text": "6. room",
+        "label": "Picture 6: room",
+        "category": "vocabulary",
+        "translation": "6. 房間",
+        "box": {
+          "top": 61,
+          "left": 54,
+          "width": 30,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "p35-gw",
+        "text": "Grammar in Writing: Share your writing with a partner. Talk about the nouns you used.",
+        "label": "Grammar in Writing",
+        "category": "activity",
+        "translation": "寫作中的文法：與同伴分享你的寫作，討論你所使用的名詞。",
+        "box": {
+          "top": 78.5,
+          "left": 20,
+          "width": 53,
+          "height": 14
+        }
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "pageNumber": 36,
+    "fileName": "35.png",
+    "alternateNames": [
+      "36.png",
+      "p36.png",
+      "page36.png"
+    ],
+    "title": "Narrative Writing",
+    "section": "Writing Workshop",
+    "summary": "Ideas and Writing Traits Checklist",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p36-h1",
+        "text": "Narrative Writing",
+        "label": "Narrative Writing Title",
+        "category": "title",
+        "translation": "記敘文寫作",
+        "box": {
+          "top": 7.5,
+          "left": 10,
+          "width": 64,
+          "height": 8.5
+        }
+      },
+      {
+        "id": "p36-i1",
+        "text": "Ideas. Dan drew and wrote about his pals and what they do. Then he thought about what details to add. He added a picture of a ball and a label.",
+        "label": "Ideas Paragraph",
+        "category": "sentence",
+        "translation": "構思：丹畫並寫了他的夥伴以及他們做的事情。接著他思考要加入哪些細節。他加上了一顆球的圖畫和一個標籤。",
+        "box": {
+          "top": 16.5,
+          "left": 11,
+          "width": 63,
+          "height": 17
+        }
+      },
+      {
+        "id": "p36-rd",
+        "text": "Revised Draft: my pal Max, soccer ball",
+        "label": "Revised Draft",
+        "category": "activity",
+        "translation": "修改草稿：我的好夥伴麥克斯，足球",
+        "box": {
+          "top": 34,
+          "left": 26.5,
+          "width": 38,
+          "height": 32
+        }
+      },
+      {
+        "id": "p36-chk",
+        "text": "Writing Traits Checklist. Ideas: Does my writing have interesting details about my pals? Did I use nouns in my labels? Did I write letters neatly and correctly?",
+        "label": "Writing Traits Checklist",
+        "category": "activity",
+        "translation": "寫作特質檢查清單。觀點：我的寫作是否有關於夥伴的有趣細節？我有在標籤中使用名詞嗎？我的字寫得工整正確嗎？",
+        "box": {
+          "top": 67.5,
+          "left": 9.5,
+          "width": 68,
+          "height": 27.5
+        }
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "pageNumber": 37,
+    "fileName": "36.png",
+    "alternateNames": [
+      "37.png",
+      "p37.png",
+      "page37.png"
+    ],
+    "title": "Writing: Final Copy - My Pals",
+    "section": "Writing Workshop",
+    "summary": "Dan's revised writing and drawings of his pals",
+    "aspectRatio": 0.84,
+    "hotspots": [
+      {
+        "id": "p37-h1",
+        "text": "What do the details in Dan's writing tell you about his pals and what they do? Now revise your writing. Use the Checklist.",
+        "label": "Teacher Question",
+        "category": "question",
+        "translation": "丹的寫作細節告訴你關於他的朋友以及他們做什麼？現在修改你的寫作，使用檢查清單。",
+        "box": {
+          "top": 8.5,
+          "left": 16,
+          "width": 68,
+          "height": 14.5
+        }
+      },
+      {
+        "id": "p37-h2",
+        "text": "Final Copy",
+        "label": "Final Copy",
+        "category": "title",
+        "translation": "定稿",
+        "box": {
+          "top": 21.8,
+          "left": 41,
+          "width": 18,
+          "height": 4.5
+        }
+      },
+      {
+        "id": "p37-h3",
+        "text": "My Pals",
+        "label": "Title: My Pals",
+        "category": "title",
+        "translation": "我的朋友們",
+        "box": {
+          "top": 30.5,
+          "left": 39,
+          "width": 22,
+          "height": 5.5
+        }
+      },
+      {
+        "id": "p37-h4",
+        "text": "my mom",
+        "label": "my mom",
+        "category": "vocabulary",
+        "translation": "我的媽媽",
+        "box": {
+          "top": 36.5,
+          "left": 21,
+          "width": 27,
+          "height": 6
+        }
+      },
+      {
+        "id": "p37-h5",
+        "text": "van",
+        "label": "van",
+        "category": "vocabulary",
+        "translation": "廂型車",
+        "box": {
+          "top": 54,
+          "left": 26,
+          "width": 17,
+          "height": 5
+        }
+      },
+      {
+        "id": "p37-h6",
+        "text": "my brother",
+        "label": "my brother",
+        "category": "vocabulary",
+        "translation": "我的兄弟",
+        "box": {
+          "top": 36.5,
+          "left": 52,
+          "width": 28,
+          "height": 6
+        }
+      },
+      {
+        "id": "p37-h7",
+        "text": "computer",
+        "label": "computer",
+        "category": "vocabulary",
+        "translation": "電腦",
+        "box": {
+          "top": 54,
+          "left": 55.5,
+          "width": 21,
+          "height": 5
+        }
+      },
+      {
+        "id": "p37-h8",
+        "text": "my pal Max",
+        "label": "my pal Max",
+        "category": "vocabulary",
+        "translation": "我的好夥伴麥克斯",
+        "box": {
+          "top": 60.8,
+          "left": 21,
+          "width": 28,
+          "height": 6
+        }
+      },
+      {
+        "id": "p37-h9",
+        "text": "soccer ball",
+        "label": "soccer ball",
+        "category": "vocabulary",
+        "translation": "足球",
+        "box": {
+          "top": 76.2,
+          "left": 22.5,
+          "width": 25,
+          "height": 5
+        }
+      },
+      {
+        "id": "p37-h10",
+        "text": "Star",
+        "label": "Star",
+        "category": "vocabulary",
+        "translation": "星星（寵物兔名字）",
+        "box": {
+          "top": 60.8,
+          "left": 55,
+          "width": 22,
+          "height": 6
+        }
+      },
+      {
+        "id": "p37-h11",
+        "text": "rabbit",
+        "label": "rabbit",
+        "category": "vocabulary",
+        "translation": "兔子",
+        "box": {
+          "top": 76.2,
+          "left": 56,
+          "width": 20,
+          "height": 5
+        }
+      }
+    ]
+  }
+];
+    const pageImages = {};
+
+    const directScanToPageMap = {
+      "8.png": 8, "9.png": 10, "10.png": 11, "11.png": 12, "12.png": 13,
+      "13.png": 14, "14.png": 15, "15.png": 16, "16.png": 17, "17.png": 18,
+      "18.png": 19, "19.png": 20, "20.png": 21, "21.png": 22, "22.png": 23,
+      "23.png": 24, "24.png": 25, "25.png": 26, "26.png": 27, "27.png": 28,
+      "28.png": 29, "29.png": 30, "30.png": 31, "31.png": 32, "32.png": 33,
+      "33.png": 34, "34.png": 35, "35.png": 36, "36.png": 37
+    };
+
+    let currentIndex = 0;
+    let currentRate = 0.7; // 預設 0.7x 幼童精聽語速
+    let currentSpeakingId = null;
+    let isReadingPage = false;
+    let readTimeout = null;
+    let activeHotspot = null;
+
+    const pageImg = document.getElementById('pageImg');
+    const fallbackCard = document.getElementById('fallbackCard');
+    const hotspotsContainer = document.getElementById('hotspotsContainer');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const pageBadge = document.getElementById('pageBadge');
+    const captionText = document.getElementById('captionText');
+    const captionTrans = document.getElementById('captionTrans');
+    const btnReplay = document.getElementById('btnReplay');
+    const btnReadAll = document.getElementById('btnReadAll');
+    const btnOpenManager = document.getElementById('btnOpenManager');
+    const btnCloseManager = document.getElementById('btnCloseManager');
+    const managerModal = document.getElementById('managerModal');
+    const managerList = document.getElementById('managerList');
+    const btnExport = document.getElementById('btnExport');
+
+    // 自然語音搜尋
+    function getBestVoice() {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      const en = voices.filter(v => v.lang.startsWith('en'));
+      return en.find(v => {
+        const n = v.name.toLowerCase();
+        return n.includes('natural') || n.includes('neural') || n.includes('jenny') || n.includes('ana');
+      }) || en[0] || voices[0] || null;
+    }
+
+    // 發音播放
+    function speakText(text, onEnd) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = currentRate;
+      utterance.pitch = 1.15;
+      utterance.lang = 'en-US';
+      const best = getBestVoice();
+      if (best) utterance.voice = best;
+
+      utterance.onend = () => {
+        currentSpeakingId = null;
+        updateSpeakingState();
+        if (onEnd) onEnd();
+      };
+      utterance.onerror = () => {
+        currentSpeakingId = null;
+        updateSpeakingState();
+        if (onEnd) onEnd();
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (readTimeout) {
+        clearTimeout(readTimeout);
+        readTimeout = null;
+      }
+      currentSpeakingId = null;
+      isReadingPage = false;
+      btnReadAll.textContent = '▶ 朗讀整頁';
+      btnReadAll.classList.remove('reading');
+      updateSpeakingState();
+    }
+
+    function updateSpeakingState() {
+      document.querySelectorAll('.hotspot').forEach(el => {
+        const id = el.dataset.id;
+        if (id === currentSpeakingId) {
+          el.classList.add('speaking');
+        } else {
+          el.classList.remove('speaking');
+        }
+      });
+    }
+
+    function playHotspot(hs) {
+      stopSpeaking();
+      activeHotspot = hs;
+      currentSpeakingId = hs.id;
+      captionText.textContent = hs.text;
+      captionTrans.textContent = hs.translation || '';
+      btnReplay.style.display = 'block';
+      updateSpeakingState();
+      speakText(hs.text);
+    }
+
+    function playWholePage() {
+      stopSpeaking();
+      const page = pages[currentIndex];
+      if (!page || !page.hotspots || page.hotspots.length === 0) return;
+
+      isReadingPage = true;
+      btnReadAll.textContent = '⏹️ 停止朗讀';
+      btnReadAll.classList.add('reading');
+
+      let idx = 0;
+      function next() {
+        if (!isReadingPage || idx >= page.hotspots.length) {
+          stopSpeaking();
+          return;
+        }
+        const hs = page.hotspots[idx];
+        activeHotspot = hs;
+        currentSpeakingId = hs.id;
+        captionText.textContent = hs.text;
+        captionTrans.textContent = hs.translation || '';
+        btnReplay.style.display = 'block';
+        updateSpeakingState();
+
+        speakText(hs.text, () => {
+          idx++;
+          readTimeout = setTimeout(next, 500);
+        });
+      }
+      next();
+    }
+
+    // 渲染指定頁
+    function renderPage(idx) {
+      currentIndex = idx;
+      stopSpeaking();
+      const page = pages[currentIndex];
+      if (!page) return;
+
+      pageBadge.textContent = `P.${page.pageNumber} (${currentIndex + 1}/29)`;
+      btnPrev.disabled = currentIndex === 0;
+      btnNext.disabled = currentIndex === pages.length - 1;
+
+      const customImg = pageImages[page.pageNumber];
+      const imgSrc = customImg || ('./' + page.fileName);
+
+      pageImg.onload = () => {
+        pageImg.style.display = 'block';
+        fallbackCard.style.display = 'none';
+      };
+      pageImg.onerror = () => {
+        pageImg.style.display = 'none';
+        fallbackCard.style.display = 'flex';
+        document.getElementById('fbSection').textContent = page.section;
+        document.getElementById('fbPage').textContent = `P.${page.pageNumber}`;
+        document.getElementById('fbQuote').textContent = page.hotspots[0]?.text || page.title;
+        document.getElementById('fbSummary').textContent = page.summary;
+        document.getElementById('fbNum').textContent = `Page ${page.pageNumber}`;
+      };
+      pageImg.src = imgSrc;
+
+      // 渲染熱區
+      hotspotsContainer.innerHTML = '';
+      page.hotspots.forEach(hs => {
+        const div = document.createElement('div');
+        div.className = 'hotspot';
+        div.dataset.id = hs.id;
+        div.style.top = hs.box.top + '%';
+        div.style.left = hs.box.left + '%';
+        div.style.width = hs.box.width + '%';
+        div.style.height = hs.box.height + '%';
+        div.title = hs.text;
+
+        const icon = document.createElement('span');
+        icon.className = 'hotspot-speaker-icon';
+        icon.textContent = '🔊';
+        div.appendChild(icon);
+
+        div.addEventListener('click', (e) => {
+          e.stopPropagation();
+          playHotspot(hs);
+        });
+
+        hotspotsContainer.appendChild(div);
+      });
+
+      if (page.hotspots.length > 0) {
+        activeHotspot = page.hotspots[0];
+        captionText.textContent = activeHotspot.text;
+        captionTrans.textContent = activeHotspot.translation || '';
+        btnReplay.style.display = 'block';
+      } else {
+        activeHotspot = null;
+        captionText.textContent = '本頁為導引插頁';
+        captionTrans.textContent = '';
+        btnReplay.style.display = 'none';
+      }
+    }
+
+    // 建立 29 頁圖片管理面板
+    function buildManager() {
+      managerList.innerHTML = '';
+
+      const batchDiv = document.createElement('div');
+      batchDiv.style.cssText = 'background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: #1d4ed8; display: flex; align-items: center; justify-content: space-between;';
+      batchDiv.innerHTML = '<span>批次分流：9.png➔P.10，10.png➔P.11，零密鑰碰撞</span>';
+      
+      const batchBtn = document.createElement('label');
+      batchBtn.className = 'btn btn-next';
+      batchBtn.style.cssText = 'padding: 4px 10px; font-size: 0.75rem; cursor: pointer;';
+      batchBtn.textContent = '批次分流上傳';
+      const batchInput = document.createElement('input');
+      batchInput.type = 'file';
+      batchInput.multiple = true;
+      batchInput.accept = 'image/*';
+      batchInput.style.display = 'none';
+      batchInput.onchange = (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(f => {
+          const lower = f.name.toLowerCase().trim();
+          let pageNum = directScanToPageMap[lower] || directScanToPageMap[f.name];
+          if (!pageNum) {
+            const m = lower.match(/(\d+)/);
+            if (m) {
+              const num = parseInt(m[1], 10);
+              const p = pages.find(x => x.pageNumber === num);
+              if (p) pageNum = num;
+            }
+          }
+          if (pageNum) {
+            pageImages[pageNum] = URL.createObjectURL(f);
+          }
+        });
+        alert(`已載入 ${files.length} 張圖片！`);
+        buildManager();
+        renderPage(currentIndex);
+      };
+      batchBtn.appendChild(batchInput);
+      batchDiv.appendChild(batchBtn);
+      managerList.appendChild(batchDiv);
+
+      pages.forEach((p, idx) => {
+        const row = document.createElement('div');
+        row.className = 'page-row' + ((p.pageNumber === 10 || p.pageNumber === 11) ? ' highlight' : '');
+
+        const info = document.createElement('div');
+        const hasCustom = !!pageImages[p.pageNumber];
+        info.innerHTML = `<span style="font-weight: 800; font-size: 0.85rem; margin-right: 8px;">P.${p.pageNumber}</span>
+          <span style="font-size: 0.8rem; font-weight: 600;">${p.title}</span>
+          <span style="font-size: 0.7rem; color: #64748b; margin-left: 8px;">(${p.fileName})</span>
+          ${hasCustom ? '<span style="color: #059669; font-weight: bold; font-size: 0.7rem; margin-left: 6px;">● 已自訂</span>' : ''}`;
+
+        const btns = document.createElement('div');
+        btns.style.display = 'flex';
+        btns.style.gap = '6px';
+
+        const label = document.createElement('label');
+        label.className = 'btn';
+        label.style.cssText = 'padding: 3px 8px; font-size: 0.75rem; cursor: pointer;';
+        label.textContent = '更換此頁';
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        fileInput.onchange = (e) => {
+          const f = e.target.files[0];
+          if (f) {
+            pageImages[p.pageNumber] = URL.createObjectURL(f);
+            buildManager();
+            renderPage(currentIndex);
+          }
+        };
+        label.appendChild(fileInput);
+
+        const gotoBtn = document.createElement('button');
+        gotoBtn.className = 'btn';
+        gotoBtn.style.cssText = 'padding: 3px 8px; font-size: 0.75rem;';
+        gotoBtn.textContent = '前往';
+        gotoBtn.onclick = () => {
+          renderPage(idx);
+          managerModal.classList.remove('open');
+        };
+
+        btns.appendChild(label);
+        btns.appendChild(gotoBtn);
+        row.appendChild(info);
+        row.appendChild(btns);
+        managerList.appendChild(row);
+      });
+    }
+
+    // 事件監聽
+    btnPrev.onclick = () => { if (currentIndex > 0) renderPage(currentIndex - 1); };
+    btnNext.onclick = () => { if (currentIndex < pages.length - 1) renderPage(currentIndex + 1); };
+    btnReplay.onclick = () => { if (activeHotspot) playHotspot(activeHotspot); };
+    btnReadAll.onclick = () => {
+      if (isReadingPage) stopSpeaking();
+      else playWholePage();
+    };
+
+    // 語速切換 (0.7x 與 1.0x)
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRate = parseFloat(btn.dataset.rate);
+      };
+    });
+
+    // 圖片管理 Modal 開關
+    btnOpenManager.onclick = () => {
+      buildManager();
+      managerModal.classList.add('open');
+    };
+    btnCloseManager.onclick = () => {
+      managerModal.classList.remove('open');
+    };
+    btnExport.onclick = () => {
+      const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Journeys_Unit1_What_Is_A_Pal.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    // 鍵盤左右鍵翻頁
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') btnPrev.click();
+      else if (e.key === 'ArrowRight') btnNext.click();
+      else if (e.key === ' ') {
+        e.preventDefault();
+        btnReplay.click();
+      }
+    });
+
+    renderPage(0);
+  </script>
+</body>
+</html>
